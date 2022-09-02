@@ -1,5 +1,18 @@
 # Terraform-Ansible-Jenkins-AWS
 
+### Terraform
+*Add into Terraform providers block after first application*
+```
+backend "s3" {
+  bucket         = "<BUCKET_NAME>"
+  key            = "state/terraform.tfstate"
+  region         = "us-east-1"
+  encrypt        = true
+  kms_key_id     = "alias/terraform-bucket-key"
+  dynamodb_table = "terraform-state"
+}
+```
+---
 ### AWS Instance
 `Jenkins Docker Startup`
 ```

@@ -1,4 +1,4 @@
-resource "aws_kms_key" "terraform-bucket-key" {
+resource "aws_kms_key" "terraform-state-bucket-key" {
  description             = "This key is used to encrypt bucket objects"
  deletion_window_in_days = 10
  enable_key_rotation     = true
@@ -6,25 +6,34 @@ resource "aws_kms_key" "terraform-bucket-key" {
 
 resource "aws_kms_alias" "key-alias" {
  name          = "alias/terraform-bucket-key"
- target_key_id = aws_kms_key.terraform-bucket-key.key_id
+ target_key_id = aws_kms_key.terraform-state-bucket-key.key_id
 }
 
 resource "aws_s3_bucket" "terraform-state" {
  bucket = "${var.bucket_name}"
- acl    = "private"
+}
 
- versioning {
-   enabled = true
- }
+resource "aws_s3_bucket_acl" "terraform-state-acl" {
+  bucket = aws_s3_bucket.terraform-state.id
+  acl    = "private"
+}
 
- server_side_encryption_configuration {
-   rule {
-     apply_server_side_encryption_by_default {
-       kms_master_key_id = aws_kms_key.terraform-bucket-key.arn
-       sse_algorithm     = "aws:kms"
-     }
-   }
- }
+resource "aws_s3_bucket_versioning" "versioning-terraform-state" {
+  bucket = aws_s3_bucket.terraform-state.id
+  versioning_configuration {
+    status = "Enabled"
+  }
+}
+
+resource "aws_s3_bucket_server_side_encryption_configuration" "terraform-state-encrypt-config" {
+  bucket = aws_s3_bucket.terraform-state.bucket
+
+  rule {
+    apply_server_side_encryption_by_default {
+      kms_master_key_id = aws_kms_key.terraform-state-bucket-key.arn
+      sse_algorithm     = "aws:kms"
+    }
+  }
 }
 
 resource "aws_s3_bucket_public_access_block" "block" {

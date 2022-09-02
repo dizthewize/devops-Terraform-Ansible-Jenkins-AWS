@@ -6,6 +6,11 @@ resource "aws_vpc" "myapp-vpc" {
   }
 }
 
+module "jenkins-tfstate" {
+  source = "./modules/s3"
+  bucket_name = var.bucket_name
+}
+
 module "myapp-subnet" {
   source = "./modules/subnet"
   subnet_cidr_block = var.subnet_cidr_block

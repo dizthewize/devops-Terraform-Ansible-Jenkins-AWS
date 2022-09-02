@@ -55,16 +55,16 @@
         name: awsuser
         groups: "{{user_groups}}"
 
-- name: Start docker containers
+- name: Start Jenkins containers
   hosts: aws_ec2
   become: yes
   become_user: awsuser
   tasks:
-    - name: Copy docker-compose
-      copy:
-        src: /Users/martezconner/Desktop/projects/devops/devops-Terraform-Ansible-Jenkins-AWS/docker-compose.yaml
-        dest: /home/awsuser/docker-compose.yaml
-    - name: Start container from compose
-      docker_compose:
-        project_src: /home/awsuser
-        state: present
+    - name: Create a data container
+      docker_container:
+        name: dizthewize/jenkins-lts-alpine-jdk8
+        image: dizthewize/jenkins-lts-alpine-jdk8
+        volumes:
+          - jenkins_data:/var/jenkins_home
+          - /var/run/docker.sock:/var/run/docker.sock
+          - $(which docker):/usr/bin/docker

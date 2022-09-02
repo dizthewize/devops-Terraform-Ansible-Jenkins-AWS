@@ -11,6 +11,7 @@ Cmd: docker run --name jenkins-lts -p 8080:8080 -p 50000:50000 -d \
 ```
 ---
 ### Docker Compose setup
+Docker compose file import: `wget -O docker-compose.yml https://raw.githubusercontent.com/dizthewize/docker_jenkins_lts_alpine_jdk8/main/docker-compose.yml`
 `Add Agent container after initial Jenkins wizard setup`
 ```
 agent:

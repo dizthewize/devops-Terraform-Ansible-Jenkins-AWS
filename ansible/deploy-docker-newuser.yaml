@@ -60,11 +60,14 @@
   become: yes
   become_user: awsuser
   tasks:
-    - name: Create a data container
+    - name: Create a Jenkins container
       docker_container:
-        name: dizthewize/jenkins-lts-alpine-jdk8
-        image: dizthewize/jenkins-lts-alpine-jdk8
+        name: jenkins-lts-jdk8
+        image: dizthewize/jenkins-lts-jdk8
+        state: present
         volumes:
           - jenkins_data:/var/jenkins_home
           - /var/run/docker.sock:/var/run/docker.sock
-          - $(which docker):/usr/bin/docker
+        ports:
+          - "8080:8080"
+          - "50000:50000"
